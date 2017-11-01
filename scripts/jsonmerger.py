@@ -19,6 +19,7 @@ for filename in args.input:
         print("ERROR: File not found: \"" + filename + "\"")
         continue
     json_objects.append(json.load(in_file))
+    in_file.close()
 
 merged_counters = Counter()
 for json_object in json_objects:
