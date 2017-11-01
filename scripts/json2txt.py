@@ -14,6 +14,7 @@ try:
     in_file = open(args.input, "r")
 except IOError:
     print("ERROR: File not found: \"" + filename + "\"")
+    exit(1)
 
 json_object = json.load(in_file)
 

@@ -18,6 +18,7 @@ try:
     in_file = open(args.input, "r")
 except IOError:
     print("ERROR: File Not Found: \"" + args.input + "\"")
+    exit(1)
 
 results = Counter()
 
