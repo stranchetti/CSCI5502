@@ -23,7 +23,7 @@ for filename in args.input:
 
 merged_counters = Counter()
 for json_object in json_objects:
-    merged_counters += json_object
+    merged_counters += Counter(json_object)
 
 out_file = open(args.output, "w")
 json.dump(merged_counters, out_file)
