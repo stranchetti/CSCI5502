@@ -239,8 +239,8 @@ def insert_event(cursor, event, bst):
         org_id = _insert_org(cursor, event_org)
     new_event = (event_id,
                  event_type,
-                 actor_id,
                  repo_id,
+                 actor_id,
                  org_id,
                  event_time.replace("T", " ").replace("Z", ""))
     #cursor.execute(TABLES["events"][1], new_event)
