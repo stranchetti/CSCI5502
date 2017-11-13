@@ -3,16 +3,17 @@ import gzip
 import getpass
 import argparse
 import mysql.connector
+import pickle
 
 DATABASE = "datamining"
 
 LENGTHS = {
     "event_id" : 30, #length of main id
     "url" : 256, #length of any url
-    "name" : 64, #length of human/business names
+    "name" : 512, #length of human/business names
     "login" : 64, #length of login names
-    "ref" : 128, #length of github refs
-    "title" : 256, #names of posts, repos, branches, etc
+    "ref" : 1024, #length of github refs
+    "title" : 1024, #names of posts, repos, branches, etc.
 }
 
 #Base insertion statement
@@ -129,12 +130,13 @@ TABLES["commits"] = (
         "`sha` char(40) not null,"
         "`author` varchar(" + str(LENGTHS["name"]) + "),"
         "`message` mediumtext,"
+        "`message_length` int,"
         "`url` varchar(" + str(LENGTHS["url"]) + "),"
         "foreign key (`push_id`) references `push_events` (`push_id`)"
     ), INSERT_BASE % (
         "commits",
-        "`push_id`, `sha`, `author`, `message`, `url`",
-        "%s, %s, %s, %s, %s"
+        "`push_id`, `sha`, `author`, `message`, `message_length`,`url`",
+        "%s, %s, %s, %s, %s, %s"
     )
 )
 
@@ -208,7 +210,12 @@ def load_json_file(file_name):
     return data
 
 #insert event into database
-def insert_event(cursor, event):
+def insert_event(cursor, event, bst):
+    if bst is not None:
+        if not bst.contains(event["repo"]["id"]):
+            #ignore this event if it isn't on a repo we
+            #are interested in
+            return
     event_id = event["id"]
     event_type = event["type"]
     event_org = event.get("org", None)
@@ -236,7 +243,8 @@ def insert_event(cursor, event):
                  repo_id,
                  org_id,
                  event_time.replace("T", " ").replace("Z", ""))
-    cursor.execute(TABLES["events"][1], new_event)
+    #cursor.execute(TABLES["events"][1], new_event)
+    _execute_insert(cursor, "events", new_event)
 
 #inserts a create event into database
 def _insert_create_event(cursor, payload, event_id):
@@ -384,6 +392,7 @@ def _insert_commits(cursor, commits, push_id):
                       sha,
                       author,
                       message,
+                      len(message),
                       url)
         _execute_insert(cursor, "commits", new_commit)
 
@@ -408,17 +417,25 @@ def _execute_insert(cursor, table, params):
 parser = argparse.ArgumentParser(description="A parser that populates a MySQL database out of the .json.gz archives from githubarchive.org")
 parser.add_argument("-u", "--user", help="The username for the MySQL client to use. Defaults to user running this script.", default=getpass.getuser())
 parser.add_argument("-p", "--pass", help="Specify that you wish to provide a password for use with the MySQL database connection", action="store_true", dest="passwd")
+parser.add_argument("-r", "--repos", help="Specify a pickle file containing a binary search tree of the repo ids you want to consider", default=None)
 parser.add_argument("files", help="The list of gzipped json files to process", nargs="+")
 args = parser.parse_args()
+
+bst = None
+if args.repos:
+    with open(args.repos, "rb") as f:
+        bst = pickle.load(f)
 
 #get password if user requests to use one
 passwd = None
 if args.passwd:
     passwd = getpass.getpass("Please enter password:")
-
+    
 #establish database connection
+#we need to use utf8mb4 to allow 4 byte utf8 encodings (for things like emoji in
+#various user supplied text) since MySQL's utf8 encoding is set at 3 bytes max
 try:
-    ctx = mysql.connector.connect(user=args.user, passwd=passwd)
+    ctx = mysql.connector.connect(user=args.user, passwd=passwd, charset="utf8mb4")
 except mysql.connector.Error as error:
     print("Establishing connection to MySQL server failed: %s" % error)
     exit(1)
@@ -429,7 +446,7 @@ cursor = ctx.cursor()
 
 #create database if needed
 try:
-    cursor.execute("create database if not exists `%s` default character set 'utf8'" % DATABASE)
+    cursor.execute("create database if not exists `%s` default character set 'utf8mb4'" % DATABASE)
     ctx.database = DATABASE
 except mysql.connector.Error as error:
     print("Creating database failed: %s" % error)
@@ -456,9 +473,10 @@ except mysql.connector.Error as error:
 
 #load each file and add to database
 for f in args.files:
+    print("Parsing " + f + "...")
     for event in load_json_file(f):
         try:
-            insert_event(cursor, event)
+            insert_event(cursor, event, bst)
             ctx.commit()
         except mysql.connector.Error as error:
             print("Populating database with file %s failed: %s" % (f, error))
