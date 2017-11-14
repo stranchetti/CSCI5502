@@ -9,17 +9,17 @@ Note that to acieve the O(logn) search time when checking if an object exists in
 ### jsoncounter.py
 Create a JSON file containing the number of times each repo appeared in the input file.
 
-`python3 jsoncounter.py [-o OUTFILE] FILE`
+`python3 jsoncounter.py [(-o | --output) OUTFILE] FILE`
 
 ### jsonmerger.py
 Combine the various individual count files created by `jsoncounter.py` into a single file, aggregating the counts.
 
-`python3 jsonmerger.py [-o OUTFILE] FILE1 FILE2...`
+`python3 jsonmerger.py [(-o | --output) OUTFILE] FILE1 FILE2...`
 
 ### repo_filter.py
 This script makes use of `bst.py` to generate a Python3 pickle file containing a Binary Search Tree of repos that have an event frequency higher than a user supplied threshold. When run without any special arguments, the script will display basic statistics about the repo counts of the provided file.
 
-`python3 repo_filter.py [(-b | --bst) THRESH] [(-o | --out) NAME] FILE`
+`python3 repo_filter.py [(-b | --bst) THRESH] [(-o | --output) NAME] FILE`
 <table>
   <tr>
     <td> <strong> Option </strong> </td>
@@ -30,7 +30,7 @@ This script makes use of `bst.py` to generate a Python3 pickle file containing a
     <td> Generate a Binary Seach Tree pickle file caontaing the ids of each repo in the provided file that has at least THRESH events. </td>
   </tr>
   <tr>
-    <td> -o, --out NAME </td>
+    <td> -o, --output NAME </td>
     <td> Sepcify the name for the output pickle file. Ignored unless -b is specified. Defaults to the name of the input file followed by an underscore, the threshold vaule, and ".pickle" </td>
   </tr>
 </table>
