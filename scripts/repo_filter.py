@@ -17,7 +17,7 @@ with open(args.file, "r") as f:
     if args.thresh > 0:
         repos = bst.BST()
         for r, c in data.items():
-            if c > args.thresh and c < 500:
+            if c > args.thresh:
                 #the conversion to JSON objects in our
                 #jsoncounter.py/jsonmerger.py ends up turning
                 #the repo id into a string (since it needs to be the
