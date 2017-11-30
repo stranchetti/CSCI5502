@@ -1,0 +1,12 @@
+Summary of events per repo:
+	Number of repos: 14017002
+	Number of events: 211766974
+	Mean: 15.1078650057
+	Std deviation: 358.673007699
+	min: 1
+	Q1: 2.0
+	Median: 3.0
+	Q3: 7.0
+	90th percentile: 20.0
+	99th percentile: 172.0
+	max: 657285
