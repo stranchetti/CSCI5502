@@ -213,7 +213,7 @@ def load_json_file(file_name):
 #insert event into database
 def insert_event(cursor, event, bst):
     if bst is not None:
-        if not bst.get(event["repo"]["id"]):
+        if not bst.get(str(event["repo"]["id"])):
             #ignore this event if it isn't on a repo we
             #are interested in
             return
