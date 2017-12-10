@@ -19,15 +19,15 @@ Combine the various individual count files created by `jsoncounter.py` into a si
 ### repo_filter.py
 This script makes use of `bst.py` to generate a Python3 pickle file containing a Binary Search Tree of repos that have an event frequency higher than a user supplied threshold. When run without any special arguments, the script will display basic statistics about the repo counts of the provided file.
 
-`python3 repo_filter.py [(-b | --bst) THRESH] [(-o | --output) NAME] FILE`
+`python3 repo_filter.py [(-t | --threshold) THRESH] [(-o | --output) NAME] FILE`
 <table>
   <tr>
     <td> <strong> Option </strong> </td>
     <td> <strong> Meaning </strong> </td>
   </tr>
   <tr>
-    <td> -b, --bst THRESH </td>
-    <td> Generate a Binary Seach Tree pickle file caontaing the ids of each repo in the provided file that has at least THRESH events. </td>
+    <td> -t, --threshold THRESH </td>
+    <td> Generate a dictionary pickle file caontaing the ids of each repo in the provided file that has at least THRESH events. </td>
   </tr>
   <tr>
     <td> -o, --output NAME </td>
@@ -69,20 +69,25 @@ Perform event counting on each downloaded file. This currently requires that the
 
 Merge all intermediate count files together into a single file containing the aggregated counts.
 
-`$ python3 jsonmerger.py -o jan_first.json *_count.json`
+`$ python3 jsonmerger.py -o jan_first.json *-out.json`
 
 View some basic statistics about the total counts to help create a tree of repos.
 
 `$ python3 repo_filter.py jan_first.json`
 
-Generate the repo tree, containing repos that have an event count higher than some threshold, say 10 events.
+Generate the repo dict, containing repos that have an event count higher than some threshold, say 10 events.
 
-`$ python3 repo_filter.py -b 10 -o jan_first_repos.pickle jan_first.json`
+`$ python3 repo_filter.py -t 10 -o jan_first_repos.pickle jan_first.json`
 
-Populate the database using the tree of repos and bare gzip data files.
+Populate the database using the dict of repos and bare gzip data files.
 
 `$ python3 parser.py -u root -p -r jan_first_repos.pickle 2015-01-01-*.json.gz`
 
 When performing queries on the database, it can be helpful to export data to files in order to perform post-processing such as visualization or analysis using Python. MySQL supports this (see https://dev.mysql.com/doc/refman/5.7/en/select-into.html for more info) with a simple command. Unfortunately, most likely, you can't export to any place on the filesystem, thanks to a `secure_file_priv` server variable. If you can figure out how to disable this easily, feel free to update this, but by default, it only allows files to be exported to a specific directory (`/var/lib/mysql-files/` on Unix). I just put them there and copied them out by hand (you will need `sudo`, since they will by owned by the user mysql).
 
 `mysql> SELECT something_interesting FROM table INTO /var/lib/mysql-files/out.txt;`
+
+## Success Thresholding
+Repos with less than 172 events over the entire course of 2015 are discarded automatically (using filtering in example workflow above). Frequency counts are ten extracted from the remaining repos.
+
+`mysql> SELECT COUNT(*), repo, MONTH(created) AS created_month FROM events GROUP BY repo, created_month INTO OUTFILE 'relevant_counts';`
