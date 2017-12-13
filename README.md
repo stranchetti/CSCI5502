@@ -99,5 +99,5 @@ In order to be classified as successful it must beat the average number of commi
 
 Create a column for success (TRUE/FALSE) in the repos table of the database indicating the success of the repo
 
-`./success.py -r year.pickle -t 5 success_counts/* -p
+`./success.py -r year.pickle -t 5 success_counts/* -p`
 
