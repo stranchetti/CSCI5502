@@ -70,6 +70,7 @@ print("Etablished connection to MySQL server")
 # Get cursor for later operations
 cursor = ctx.cursor()
 
+# Add the column success of type boolean to the repo table
 try:
     cursor.execute("ALTER TABLE repos ADD success BOOLEAN")
 except mysql.connector.Error as error:
