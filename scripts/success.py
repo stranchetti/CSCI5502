@@ -82,13 +82,19 @@ except mysql.connector.Error as error:
 # Set success values
 for repoid in succ.keys():
     try:
-        cursor.execute("UPDATE repos SET success=TRUE WHERE id=%d" % int(repoid))
+        statement = "UPDATE repos SET success=TRUE WHERE id=" + str(repoid)
+        cursor.execute(statement)
     except mysql.connector.Error as error:
         print("Failed to add success for repoid %d" % int(repoid))
 
 # Set failure values
 for repoid in fail.keys():
     try:
-        cursor.execute("UPDATE repos SET success=FALSE WHERE id=%d" % int(repoid))
+        statement = "UPDATE repos SET success=FALSE WHERE id=" + str(repoid)
+        cursor.execute(statement)
     except mysql.connector.Error as error:
         print("Failed to add failure for repoid %d" % int(repoid))
+
+ctx.commit()
+ctx.close()
+cursor.close()
