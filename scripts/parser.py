@@ -32,7 +32,7 @@ TABLES = {}
 TABLES["actors"] = (
     (
         "`id` int not null,"
-        "`login` varchar(" + str(LENGTHS["login"]) + ") not null,"
+        "`login` TEXT not null,"
         "`gravatar_id` varchar(32),"
         "`avatar_url` varchar(" + str(LENGTHS["url"]) + "),"
         "`url` varchar(" + str(LENGTHS["url"]) + "),"
@@ -47,7 +47,7 @@ TABLES["actors"] = (
 TABLES["orgs"] = (
     (
         "`id` int not null,"
-        "`login` varchar(" + str(LENGTHS["login"]) + ") not null,"
+        "`login` TEXT not null,"
         "`gravatar_id` varchar(32),"
         "`avatar_url` varchar(" + str(LENGTHS["url"]) + "),"
         "`url` varchar(" + str(LENGTHS["url"]) + "),"
@@ -129,7 +129,7 @@ TABLES["commits"] = (
     (
         "`push_id` int not null,"
         "`sha` char(40) not null,"
-        "`author` varchar(" + str(LENGTHS["name"]) + "),"
+        "`author` TEXT,"
         "`message` mediumtext,"
         "`message_length` int,"
         "`url` varchar(" + str(LENGTHS["url"]) + "),"
