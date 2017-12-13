@@ -91,3 +91,13 @@ When performing queries on the database, it can be helpful to export data to fil
 Repos with less than 172 events over the entire course of 2015 are discarded automatically (using filtering in example workflow above). Frequency counts are ten extracted from the remaining repos.
 
 `mysql> SELECT COUNT(*), repo, MONTH(created) AS created_month FROM events GROUP BY repo, created_month INTO OUTFILE 'relevant_counts';`
+
+In order to be classified as successful it must beat the average number of commits for that month in our remaining data 6 months out of the year. This gives the following number of successful and unsuccessful repos:
+
+8954 successful repos (6.410825517290757%)
+130716 unsuccessful repos (93.58917448270925%)
+
+Create a column for success (TRUE/FALSE) in the repos table of the database indicating the success of the repo
+
+`./success.py -r year.pickle -t 5 success_counts/*
+
