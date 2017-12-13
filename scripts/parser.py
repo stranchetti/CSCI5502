@@ -6,12 +6,9 @@ import argparse
 import mysql.connector
 import pickle
 
-DATABASE = "datamining"
-
 LENGTHS = {
     "event_id" : 30, #length of main id
     "url" : 256, #length of any url
-    "name" : 512, #length of human/business names
     "login" : 64, #length of login names
     "ref" : 1024, #length of github refs
     "title" : 1024, #names of posts, repos, branches, etc.
@@ -211,9 +208,9 @@ def load_json_file(file_name):
     return data
 
 #insert event into database
-def insert_event(cursor, event, bst):
-    if bst is not None:
-        if not bst.get(str(event["repo"]["id"])):
+def insert_event(cursor, event, repo_hash):
+    if repo_hash is not None:
+        if not repo_hash.get(str(event["repo"]["id"])):
             #ignore this event if it isn't on a repo we
             #are interested in
             return
@@ -418,14 +415,15 @@ def _execute_insert(cursor, table, params):
 parser = argparse.ArgumentParser(description="A parser that populates a MySQL database out of the .json.gz archives from githubarchive.org")
 parser.add_argument("-u", "--user", help="The username for the MySQL client to use. Defaults to user running this script.", default=getpass.getuser())
 parser.add_argument("-p", "--pass", help="Specify that you wish to provide a password for use with the MySQL database connection", action="store_true", dest="passwd")
-parser.add_argument("-r", "--repos", help="Specify a pickle file containing a binary search tree of the repo ids you want to consider", default=None)
+parser.add_argument("-r", "--repos", help="Specify a pickle file containing a python dictionary of the repo ids you want to consider", default=None)
+parser.add_argument("-d", "--database", help="Specify the database name to use", default="datamining")
 parser.add_argument("files", help="The list of gzipped json files to process", nargs="+")
 args = parser.parse_args()
 
-bst = None
+repo_hash = None
 if args.repos:
     with open(args.repos, "rb") as f:
-        bst = pickle.load(f)
+        repo_hash = pickle.load(f)
 
 #get password if user requests to use one
 passwd = None
@@ -447,8 +445,8 @@ cursor = ctx.cursor()
 
 #create database if needed
 try:
-    cursor.execute("create database if not exists `%s` default character set 'utf8mb4'" % DATABASE)
-    ctx.database = DATABASE
+    cursor.execute("create database if not exists `%s` default character set 'utf8mb4'" % args.database)
+    ctx.database = args.database
 except mysql.connector.Error as error:
     print("Creating database failed: %s" % error)
     cursor.close()
@@ -477,7 +475,7 @@ for f in args.files:
     print("Parsing " + f + "...")
     for event in load_json_file(f):
         try:
-            insert_event(cursor, event, bst)
+            insert_event(cursor, event, repo_hash)
             ctx.commit()
         except mysql.connector.Error as error:
             print("Populating database with file %s failed: %s" % (f, error))
