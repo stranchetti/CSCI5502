@@ -61,7 +61,7 @@ if args.passwd:
 
 # Establish connection
 try:
-    ctx = mysql.connector.connect(user=args.user, database=args.database, passwd=passwd, charset="utf8mb4")
+    ctx = mysql.connector.connect(user=args.user, database=args.db, passwd=passwd, charset="utf8mb4")
 except mysql.connector.Error as error:
     print("Establishing connection to MySQL server failed: %s" % error)
     exit(1)
