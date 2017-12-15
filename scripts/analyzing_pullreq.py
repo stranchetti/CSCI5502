@@ -8,11 +8,11 @@ from glob import glob
 
 
 succ = []
-for f in glob("results/pull_req_commits/*_succ.txt"):
+for f in glob("results/pullreq_commits/*_succ.txt"):
     succ.extend(np.loadtxt(f))
 
 fail = []
-for f in glob("results/pull_req_commits/*_fail.txt"):
+for f in glob("results/pullreq_commits/*_fail.txt"):
     fail.extend(np.loadtxt(f))
 
 m1 = np.mean(succ)
