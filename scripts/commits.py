@@ -69,8 +69,6 @@ fail_sum = summary(fail)
 print("SUCCESS")
 succ_sum = summary(succ)
 
-exit(1)
-
 #for i, test in enumerate(["all", "clean", "outlier"]):
 for i, test in enumerate(["all"]):
     stats = ttest_ind_from_stats(fail_sum[i].mean,
