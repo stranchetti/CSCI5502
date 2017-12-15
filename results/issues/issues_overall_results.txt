@@ -598,9 +598,17 @@ Failure Scaled StdDev: 0.0232780491211
 Failure Scaled Nobs: 290307
 Scaled T-Test: Ttest_indResult(statistic=27.056561555056319, pvalue=4.2092287185093319e-161)
 
-Opened Succ/Total Succ0.559871754142
-Closed Succ/Total Succ0.420105506044
-Reopened Succ/Total Succ0.0200227398131
-Opened Fail/Total Fail0.568243624252
-Closed Fail/Total Fail0.413278443987
-Reopened Fail/Total Fail0.0184779317605
+Total Succ 239228
+Opened Succ 133937
+Closed Succ 100501
+Reopened Succ 4790
+Total Fail 359997
+Opened Fail 204566
+Closed Fail 148779
+Reopened Fail 6652
+Opened Succ/Total Succ 0.559871754142
+Closed Succ/Total Succ 0.420105506044
+Reopened Succ/Total Succ 0.0200227398131
+Opened Fail/Total Fail 0.568243624252
+Closed Fail/Total Fail 0.413278443987
+Reopened Fail/Total Fail 0.0184779317605
