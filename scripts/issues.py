@@ -73,10 +73,10 @@ for month in keys:
         print("Failure StdDev: " + str(stddev2))
         print("Failure Nobs: " + str(nobs2))
         print("T-Test: " + str(scipy.stats.ttest_ind_from_stats(m1,stddev1,nobs1,m2,stddev1,nobs2)))
-        m1 /= results_succ["count"][0]
-        m2 /= results_fail["count"][0]
-        stddev1 /= results_succ["count"][0]
-        stddev2 /= results_fail["count"][0]
+        m1 /= nobs1
+        m2 /= nobs2
+        stddev1 /= nobs1
+        stddev2 /= nobs2
         print("Success Scaled Mean: " + str(m1))
         print("Success Scaled StdDev: " + str(stddev1))
         print("Success Scaled Nobs: " + str(nobs1))
@@ -85,6 +85,48 @@ for month in keys:
         print("Failure Scaled Nobs: " + str(nobs2))
         print("Scaled T-Test: " + str(scipy.stats.ttest_ind_from_stats(m1,stddev1,nobs1,m2,stddev1,nobs2)))
         print()
+
+m1=0
+m2=0
+stddev1=0
+stddev2=0
+nobs1=0
+nobs2=0
+
+print("\nUsing averaged means and stddev for the year")
+for key in data_columns:
+    print(key + ":")
+    for month in keys:
+        m1 += results_succ[month][key + "_mean"]
+        m2 += results_fail[month][key + "_mean"]
+        stddev1 += results_succ[month][key + "_stddev"]
+        stddev2 += results_fail[month][key + "_stddev"]
+        nobs1 += results_succ[month]["nobs"]
+        nobs2 += results_fail[month]["nobs"]
+    m1 /= len(keys)
+    m2 /= len(keys)
+    stddev1 /= len(keys)
+    stddev2 /= len(keys)
+    nobs1 /= len(keys)
+    nobs2 /= len(keys)
+    print("Success Mean: " + str(m1))
+    print("Success StdDev: " + str(stddev1))
+    print("Success Nobs: " + str(nobs1))
+    print("Failure Mean: " + str(m2))
+    print("Failure StdDev: " + str(stddev2))
+    print("Failure Nobs: " + str(nobs2))
+    print("T-Test: " + str(scipy.stats.ttest_ind_from_stats(m1,stddev1,nobs1,m2,stddev1,nobs2)))
+    m1 /= nobs1
+    m2 /= nobs2
+    stddev1 /= nobs1
+    stddev2 /= nobs2
+    print("Success Scaled Mean: " + str(m1))
+    print("Success Scaled StdDev: " + str(stddev1))
+    print("Success Scaled Nobs: " + str(nobs1))
+    print("Failure Scaled Mean: " + str(m2))
+    print("Failure Scaled StdDev: " + str(stddev2))
+    print("Failure Scaled Nobs: " + str(nobs2))
+    print("Scaled T-Test: " + str(scipy.stats.ttest_ind_from_stats(m1,stddev1,nobs1,m2,stddev1,nobs2))+"\n")
 
 print("Total Succ " + str(results_succ["count"][0]))
 print("Opened Succ " + str(results_succ["opened"][0]))
