@@ -1,0 +1,3 @@
+create table tmp_actors_per_branch as select events.`id`, `type`, `repo`, `actor`, `org`, `created`, `push_id`, `ref`, `head`, `before`, `size`, `distinct`, `success` from events join push_events on events.id = push_events.id join repos on repos.id = events.repo;
+select repo, ref, count(distinct actor), success from (select events.`id`, `type`, `repo`, `actor`, `org`, `created`, `push_id`, `ref`, `head`, `before`, `size`, `distinct`, `success` from events join push_events on events.id = push_events.id join repos on repos.id = events.repo) t group by repo, ref into outfile 'actors_per_branch';
+drop table tmp_actors_per_branch;
